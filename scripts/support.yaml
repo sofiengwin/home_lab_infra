@@ -15,7 +15,19 @@ packages:
   - qemu-guest-agent
   - net-tools
   - curl
+%{ for package in additional_packages ~}
+  - ${package}
+%{ endfor ~}
+write_files:
+%{for file in files ~}
+  - path: ${file.file_path}
+    content: |-
+      ${file.content}
+%{ endfor ~}
 runcmd:
   - systemctl enable --now qemu-guest-agent
   - systemctl start qemu-guest-agent
   - echo "done" > /tmp/cloud-config.done
+%{for command in commands ~}
+  - ${command}
+%{ endfor ~}

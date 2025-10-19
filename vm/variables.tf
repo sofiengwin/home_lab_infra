@@ -18,15 +18,10 @@ variable "memory" {
 
 variable "disk_size" {
   description = "Disk size in GB"
-  type        = number
+  type        = string
   default     = 20
 }
 
-variable "image_url" {
-  description = "URL of the cloud image to download"
-  type        = string
-  default     = "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
-}
 
 variable "vm_description" {
   description = "Description for the VM"
@@ -50,4 +45,16 @@ variable "sockets" {
   type        = number
   description = "The number of sockets to allocate to the VM"
   default     = 1
+}
+
+variable "cloud_config_id" {
+  type = string
+}
+
+variable "ip_address" {
+  type = string
+}
+
+variable "cloud_image_id" {
+  type = string
 }

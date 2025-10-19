@@ -1,0 +1,11 @@
+#cloud-config
+package_update: true
+packages:
+  - qemu-guest-agent
+  - net-tools
+  - curl
+  - nginx
+runcmd:
+  - systemctl enable --now qemu-guest-agent
+  - systemctl start qemu-guest-agent
+  - echo "done" > /tmp/cloud-config-additional.done

@@ -1,11 +1,7 @@
-# output "ssh_host" {
-#   value = proxmox_vm_qemu.cloudinit-example.ssh_host
+# output "macaddress" {
+#   value = macaddress.example_address[*].address
 # }
 
-# output "ssh_port" {
-#   value = proxmox_vm_qemu.cloudinit-example.ssh_port
-# }
-
-# output "default_ipv4_address" {
-#   value = proxmox_vm_qemu.cloudinit-example.default_ipv4_address
+# output "ipv4_addresses" {
+#   value = module.workers.ipv4_addresses
 # }

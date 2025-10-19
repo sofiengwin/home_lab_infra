@@ -1,7 +1,3 @@
-module "workers" {
-  source    = "./vm"
-  vm_name   = "workers"
-  memory    = "20186"
-  disk_size = "20"
+module "cloud_image" {
+  source = "./cloud_image"
 }
-

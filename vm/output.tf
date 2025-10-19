@@ -1,11 +1,9 @@
-output "vm_id" {
-  description = "ID of the created VM"
-  value       = proxmox_virtual_environment_vm.ubuntu_vm.id
+output "ipv4_addresses" {
+  value = proxmox_virtual_environment_vm.ubuntu_vm.ipv4_addresses
 }
 
-output "vm_name" {
-  description = "Name of the created VM"
-  value       = var.vm_name
+output "vm_id" {
+  value = proxmox_virtual_environment_vm.ubuntu_vm.id
 }
 
 # output "primary_ipv4" {

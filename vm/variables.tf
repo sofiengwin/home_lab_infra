@@ -46,15 +46,29 @@ variable "sockets" {
   description = "The number of sockets to allocate to the VM"
   default     = 1
 }
-
-variable "cloud_config_id" {
-  type = string
-}
-
 variable "ip_address" {
   type = string
 }
 
 variable "cloud_image_id" {
   type = string
+}
+
+variable "additional_packages" {
+  type = list(string)
+  default = []
+}
+
+variable "files" {
+  type = list(object({
+    file_path = string
+    content = string
+  }))
+
+  default = []
+}
+
+variable "commands" {
+  type = list(string)
+  default = []
 }

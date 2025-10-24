@@ -8,33 +8,21 @@ variable "master_nodes" {
     disk_size = string
   }))
 }
+
+
+
+
 variable "worker_nodes" {
-  type = list(object({
-    vm_name  = string,
-    node_name = string,
-    vm_description = string
+  description = "Worker VMs"
+  type = map(object({
+    vm_name      = string,
+    node_name  = string,
     cores     = number,
     memory    = number,
-    disk_size = string
+    disk_size = number,
+    ip_address = string,
   }))
 }
-
-variable "macaddress_map" {
-  description = "Map of VM names to MAC addresses"
-  type        = map(string)
-  default     = {}
-  
-}
-# variable "workers" {
-#   description = "Worker VMs"
-#   type = map(object({
-#     cores     = optional(number),
-#     memory    = optional(number),
-#     disk_size = optional(string),
-#     user      = optional(string),
-#     password  = optional(string),
-#   }))
-# }
 
 # variable "nodes" {
 #   description = "List of all available nodes"
@@ -67,3 +55,13 @@ variable "macaddress_map" {
 #   "1e:f5:65:3f:e9:0e",
 #   "7a:bf:e5:c0:9b:72",
 # ]
+
+variable "k3s_token" {
+  description = "K3s cluster token"
+  type        = string
+}
+
+variable "db_connection_url" {
+  description = "DB connection for postgres database"
+  type = string
+}

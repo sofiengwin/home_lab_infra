@@ -7,26 +7,15 @@
 - [x] Test homelab ssh key that does not use a passphrase: Solution was using a key that does not require a passpharase
 - [x] Add more details to user-data
 - [x] Test more user-data flow for installing k3s
-- [] Add nginx support node
-- [] Setup docker in nginx node
-- [] Setupo linus lcs
-- [] Setup nginx
+- [x] Add nginx support node
+- [x] Setup docker in nginx node
+- [x] Create multiple masters cluster
+- [x] Setup up worker module
+- [x] Setup up master module
+- [x] Create 3 masters
+- [x] Create 3 workers
+- [x] Join master to worker
+- [x] Setup postgres - done
+- [x] Setup full cluster
+- [x] Setup redis
 - [] Setup uptime kuma
-- [] Test using a additional cloud config while cloning
-- [] Create multiple masters cluster
-- Setup up worker module
-- Setup up master module
-- Create 3 masters
-- Create 3 workers
-- Join master to worker
-- Setup ningx
-- Setup postgres - done
-- Setup full cluster
-- [] Add docker terraform module for docker
-
-
-
-curl -sfL https://get.k3s.io | K3S_TOKEN=775f094564997ff82fbe48901ec92e7f sh -
-
-curl -sfL https://get.k3s.io | K3S_URL=https://192.168.1.32:6443 K3S_TOKEN=775f094564997ff82fbe48901ec92e7f K3S_NODE_NAME=worker-2 sh -
-

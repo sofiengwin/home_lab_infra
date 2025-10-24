@@ -1,3 +1,24 @@
+data "local_file" "ssh_public_key" {
+  filename = "/Users/godwinogbara/.ssh/homelab.pub"
+}
+resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
+  content_type = "snippets"
+  datastore_id = "local"
+  node_name    = var.node_name
+  overwrite = true
+
+  source_raw {
+    data = templatefile("${path.module}/../scripts/user-data.yaml.tftpl", {
+      vm_name       = var.vm_name
+      ssh_public_key = trimspace(data.local_file.ssh_public_key.content)
+      additional_packages = var.additional_packages
+      files = var.files
+      commands = var.commands
+    })
+
+    file_name = format("cloud-config-user-data-%s.yaml", var.vm_name)
+  }
+}
 resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
   name      = var.vm_name
   node_name = var.node_name
@@ -47,7 +68,7 @@ resource "proxmox_virtual_environment_vm" "ubuntu_vm" {
       }
     }
 
-    user_data_file_id = var.cloud_config_id
+    user_data_file_id = proxmox_virtual_environment_file.user_data_cloud_config.id
   }
 
   network_device {

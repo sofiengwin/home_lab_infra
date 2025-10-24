@@ -1,57 +1,99 @@
 locals {
-  main_control_k3s_install = <<-K3S
-    curl -sfL https://get.k3s.io | K3S_TOKEN=775f094564997ff82fbe48901ec92e7f K3S_NODE_NAME=${var.vm_name} sh -
-  K3S
+  main_master_ip_address = "192.168.1.205"
+  main_master_node_name = "pve"
+  main_master_vm_name = "control-node-one"
+
+  support_masters = [
+    {
+      vm_name  = "master-2",
+      node_name = "pvelenovo",
+      ip_address = "192.168.1.206",
+      cloud_image_id = module.pvepfsense_cloud_image.cloud_image_id
+    },
+    {
+      vm_name  = "master-3",
+      node_name = "pvepfsense",
+      ip_address = "192.168.1.207",
+      cloud_image_id = module.pvelenovo_cloud_image.cloud_image_id
+    }
+  ]
+
+  support_masters_map = { for idx, val in local.support_masters : idx => val }
 }
 
-
-module "control_node_user_data" {
-  source = "./user_data"
-  vm_name = var.vm_name
-  node_name = var.node_name
-  commands = [
+module "control_nodes_module" {
+  source = "./vm"
+  vm_name = local.main_master_vm_name
+  node_name = local.main_master_node_name
+  memory = 4096
+  disk_size = 50
+  ip_address = local.main_master_ip_address
+  cloud_image_id = module.pve_cloud_image.cloud_image_id
+    commands = [
     "echo \"done\" > /tmp/cloud-config.done",
-    local.main_control_k3s_install
+    "/k3s_install.sh"
   ]
   files = [
     {
       file_path = "/tmp/cloud.cloud"
       content: "From cloud config"
+    },
+    {
+      file_path = "k3s_install.sh"
+      content = templatefile("${path.module}/scripts/k3s-server.sh.tftpl", {
+        mode = "server"
+        tokens       = [var.k3s_token]
+        alt_names    = ["192.168.1.200"]
+        server_hosts = []
+        node_taints  = ["CriticalAddonsOnly=true:NoExecute"]
+        disable      = []
+        datastores = [var.db_connection_url]
+      })
     }
   ]
   additional_packages = ["vim"]
 }
 
-module "control_nodes_module" {
+module "support_control_nodes_module" {
   source = "./vm"
-  vm_name = var.vm_name
-  node_name = var.node_name
+  providers = {
+    proxmox = proxmox
+  }
+  for_each = local.support_masters_map
+  vm_name = each.value.vm_name
+  node_name = each.value.node_name
   memory = 4096
   disk_size = 50
-  ip_address = var.ip_address
-  cloud_config_id = module.control_node_user_data.cloud_config_id
-  cloud_image_id = module.cloud_image.cloud_image_id
+  ip_address = each.value.ip_address
+  cloud_image_id = each.value.cloud_image_id
+  commands = [
+    "echo \"done\" > /tmp/cloud-config.done",
+    "/k3s_install.sh"
+  ]
+  files = [
+    {
+      file_path = "/tmp/cloud.cloud"
+      content: "From cloud config"
+    },
+    {
+      file_path = "k3s_install.sh"
+      content = templatefile("${path.module}/scripts/k3s-server.sh.tftpl", {
+        mode = "server"
+        tokens       = [var.k3s_token]
+        server_hosts = ["192.168.1.205"]
+        node_taints  = ["CriticalAddonsOnly=true:NoExecute"]
+        disable      = []
+        datastores = [var.db_connection_url]
+        alt_names    = []
+      })
+    }
+  ]
+  additional_packages = ["vim"]
 }
 
-output "vm_ipv4_address" {
+output "main_master_vm_ipv4_address" {
   value = module.control_nodes_module.vm_ipv4_address
 }
-
-output "cloud_config_id" {
-  value = module.control_node_user_data.cloud_config_id
-}
-
-variable "node_name" {
-  type = string
-  default = "pve"
-}
-
-variable "vm_name" {
-  type = string
-  default = "control-node-one"
-}
-
-variable "ip_address" {
-  type = string
-  default = "192.168.1.32"
+output "support_control_vm_ipv4_address" {
+  value = [for instance in module.support_control_nodes_module : instance.vm_ipv4_address]
 }

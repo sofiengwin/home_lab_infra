@@ -46,7 +46,7 @@ module "control_nodes_module" {
         alt_names    = ["192.168.1.200"]
         server_hosts = []
         node_taints  = ["CriticalAddonsOnly=true:NoExecute"]
-        disable      = []
+        disable      = ["servicelb"]
         datastores = [var.db_connection_url]
       })
     }
@@ -55,6 +55,7 @@ module "control_nodes_module" {
 }
 
 module "support_control_nodes_module" {
+  depends_on = [ module.control_nodes_module ]
   source = "./vm"
   providers = {
     proxmox = proxmox
@@ -82,7 +83,7 @@ module "support_control_nodes_module" {
         tokens       = [var.k3s_token]
         server_hosts = ["192.168.1.205"]
         node_taints  = ["CriticalAddonsOnly=true:NoExecute"]
-        disable      = []
+        disable      = ["servicelb"]
         datastores = [var.db_connection_url]
         alt_names    = []
       })

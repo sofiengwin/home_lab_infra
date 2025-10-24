@@ -5,7 +5,16 @@ curl -sfL https://get.k3s.io | sh -s - ${mode} \
 %{ for host in server_hosts ~}
 --server "${host}" \
 %{ endfor ~}
+%{ for alt in alt_names ~}
+--tls-san "${alt}" \
+%{ endfor ~}
+%{ for token in tokens ~}
+--token "${token}" \
+%{ endfor ~}
 %{ for taint in node_taints ~}
 --node-taint "${ taint }" \
+%{ endfor ~}
+%{ for db_connection in datastores ~}
+--datastore-endpoint="${ db_connection }" \
 %{ endfor ~}
 --log $HOME/.k3s-install-log.txt

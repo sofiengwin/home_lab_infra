@@ -8,6 +8,8 @@ locals {
 
 
 module "worker_nodes" {
+  depends_on = [ module.control_nodes_module ]
+
   source = "./vm"
   providers = {
     proxmox = proxmox

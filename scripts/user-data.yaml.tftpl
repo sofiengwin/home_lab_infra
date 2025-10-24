@@ -21,8 +21,9 @@ packages:
 write_files:
 %{for file in files ~}
   - path: ${file.file_path}
+    permissions: '0755'
     content: |-
-      ${file.content}
+      ${ indent(6, file.content) }
 %{ endfor ~}
 runcmd:
   - systemctl enable --now qemu-guest-agent
